@@ -49,7 +49,7 @@ E2E-Tests laufen automatisch bei Pushes auf `main` und bei Tags. Pro CI-Run wird
 
 ## Releases
 
-Mit Hilfe von Drone sollen automatisch Releases erstellt werden, die dann im Anschluss sowohl in Gitea als auch auf einer eigens dafür hergerichteten Website zum Download zur Verfügung stehen. Der Source-Code für letzteres soll natürlich auch in Gitea gehostet werden.
+Mit Hilfe von Drone sollen automatisch Releases erstellt werden, die dann im Anschluss sowohl in Gitea als auch auf einer eigens dafür hergerichteten Website zum Download zur Verfügung stehen: https://home.gilmour109.de/devops. Der Source-Code für letzteres soll natürlich auch in Gitea gehostet werden.
 
 ## Übersicht über den Life-Cycle
 
