@@ -24,6 +24,19 @@ Grund für die Verwendung von Open-Source Software ist, dass das ganze einfach u
 
 Für den Server der Smartphone-App sollen automatisch Docker Images erstellt werden. Die Produktion auf dem VPS wird per Docker Compose deployed, da dort immer nur eine Version läuft. Für Staging auf Proxmox wird [K3s](https://k3s.io/) verwendet, da dort mehrere Versionen parallel laufen können.
 
+## Reverse Proxy und TLS
+
+Als Reverse Proxy wird [Caddy](https://caddyserver.com/) auf dem VPS eingesetzt. Caddy stellt automatisch TLS-Zertifikate ueber Let's Encrypt aus und routet Anfragen anhand der Subdomain an den jeweiligen Service weiter.
+
+| Subdomain                | Beschreibung                                                 |
+| ------------------------ | ------------------------------------------------------------ |
+| `home.gilmour109.de`     | Startseite                                                   |
+| `calchat.gilmour109.de`  | CalChat Produktion                                           |
+| `gitea.gilmour109.de`    | Git-Hosting + Container Registry                             |
+| `drone.gilmour109.de`    | Drone CI/CD Server                                           |
+| `garage.gilmour109.de`   | Garage S3 API (OpenTofu State, APK-Uploads aus der Pipeline) |
+| `releases.gilmour109.de` | Garage Web Gateway (stellt APKs als Download-Seite bereit)   |
+
 ## Infrastruktur (IaC)
 
 Die Infrastruktur wird per [OpenTofu](https://opentofu.org/) provisioniert und per [Ansible](https://github.com/ansible/ansible) konfiguriert. Alle lokalen Systeme (Proxmox) sind hinter CGNAT und nur über WireGuard-Tunnel via VPS erreichbar.
@@ -49,7 +62,7 @@ E2E-Tests laufen automatisch bei Pushes auf `main` und bei Tags. Pro CI-Run wird
 
 ## Releases
 
-Mit Hilfe von Drone sollen automatisch Releases erstellt werden, die dann im Anschluss sowohl in Gitea als auch auf einer eigens dafür hergerichteten Website zum Download zur Verfügung stehen: https://home.gilmour109.de/devops. Der Source-Code für letzteres soll natürlich auch in Gitea gehostet werden.
+Mit Hilfe von [Drone](https://drone.gilmour109.de) sollen automatisch Releases erstellt werden, die dann im Anschluss sowohl in Gitea als auch auf einer eigens dafür hergerichteten Website zum Download zur Verfügung stehen: https://home.gilmour109.de/devops. Der Source-Code für letzteres soll natürlich auch in Gitea gehostet werden.
 
 ## Übersicht über den Life-Cycle
 
@@ -70,7 +83,7 @@ Mit Hilfe von Drone sollen automatisch Releases erstellt werden, die dann im Ans
 5. E2E-Test:
 	- Laufen automatisch bei Pushes auf main und bei Tags
 	- OpenTofu erstellt einen Linked Clone aus dem E2E-Template auf Proxmox
-	- Auf der VM: Android Emulator starten, App per Expo Go laden, Appium + WebDriverIO Tests ausführen
+	- Auf der VM: Android Emulator starten, App per Expo Go laden, Appium + WebDriverIO Tests ausführen (hat nie funktioniert)
 	- main: Tests laufen gegen temporäres K3s-Backend, danach Cleanup (VM + K3s-Ressourcen)
 	- Tags: Tests laufen gegen bestehendes K3s-Deployment, danach VM-Cleanup
 	- Bei Fehler: Pipeline stoppt (kein APK-Build)
