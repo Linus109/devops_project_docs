@@ -22,7 +22,7 @@ Grund für die Verwendung von Open-Source Software ist, dass das ganze einfach u
 
 ## Docker, Docker Compose und K3s
 
-Für den Server der Smartphone-App sollen automatisch Docker Images erstellt werden. Die Produktion auf dem VPS wird per Docker Compose deployed — einfach und ausreichend, da dort immer nur eine Version läuft. Für Staging und Preview auf Proxmox wird [K3s](https://k3s.io/) verwendet, da dort mehrere Versionen parallel laufen können (pro Branch ein eigener Namespace).
+Für den Server der Smartphone-App sollen automatisch Docker Images erstellt werden. Die Produktion auf dem VPS wird per Docker Compose deployed, da dort immer nur eine Version läuft. Für Staging auf Proxmox wird [K3s](https://k3s.io/) verwendet, da dort mehrere Versionen parallel laufen können.
 
 ## Infrastruktur (IaC)
 
@@ -42,7 +42,7 @@ E2E-Tests laufen automatisch bei Pushes auf `main` und bei Tags. Pro CI-Run wird
 
 - **main-Branch:** Ein temporaeres Test-Backend (CalChat Server + MongoDB) wird als Pod-Set auf K3s deployed. Die E2E-Tests laufen gegen dieses temporaere Backend. Nach dem Test werden die K3s-Ressourcen per Label-Selektor aufgeraeumt.
 - **Tags:** Das Backend existiert bereits als K3s-Deployment (aus dem Tag-Deploy-Step). Die E2E-Tests laufen direkt dagegen.
-- **Bei Fehlschlag:** E-Mail-Benachrichtigung an den Entwickler. APK wird nicht gebaut.
+- **Bei Fehlschlag:** Pipeline stoppt, APK wird nicht gebaut.
 - **Bei Erfolg:** APK-Build und Release (Gitea Release bei Tags, S3-Upload bei main).
 
 > **Hinweis:** Die E2E-Tests funktionieren aktuell nicht korrekt. Der Testerfolg wird im Script gefaked (`exit 0`), damit die restliche Pipeline getestet werden kann.
@@ -73,7 +73,7 @@ Mit Hilfe von Drone sollen automatisch Releases erstellt werden, die dann im Ans
 	- Auf der VM: Android Emulator starten, App per Expo Go laden, Appium + WebDriverIO Tests ausführen
 	- main: Tests laufen gegen temporäres K3s-Backend, danach Cleanup (VM + K3s-Ressourcen)
 	- Tags: Tests laufen gegen bestehendes K3s-Deployment, danach VM-Cleanup
-	- Bei Fehler: E-Mail-Benachrichtigung, Pipeline stoppt (kein APK-Build)
+	- Bei Fehler: Pipeline stoppt (kein APK-Build)
 6. Release:
 	- Nur bei erfolgreichen E2E-Tests
 	- main: APK-Build + Upload zu S3 (Download-Portal)
